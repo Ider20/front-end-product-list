@@ -11,21 +11,24 @@ export default function Home() {
   const [productDescription, setProductDescription] = useState("");
 
   // Fetching Data from BackEnd
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/products");
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/products");
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchProducts();
-  }, [products]);
+  }, []);
 
   const handleOpen = () => {
     setIsOpen(true);
+  };
+  const handleClose = () => {
+    setIsOpen(false);
   };
 
   const inputProName = (e) => {
@@ -40,16 +43,15 @@ export default function Home() {
     console.log(e.target.value);
     setProductDescription(e.target.value);
   };
-  //--------------------------------------
+  //================================================================================
   // Handling Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const generatedId = () => {
-      return Math.floor(Math.random() * 100);
-    };
+    // const generatedId = () => {
+    //   return Math.floor(Math.random() * 100);
+    // };
     const productData = {
-      id: generatedId(),
       name: productName,
       price: parseFloat(productPrice),
       description: productDescription,
@@ -76,12 +78,30 @@ export default function Home() {
       // Handle network errors or other issues
     }
   };
+  //===========================================================================
+  //Handling delete
+  const handleDelete = async (id) => {
+    console.log("product id", id);
+    try {
+      const response = await fetch("http://localhost:8080/products/" + id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      alert("We have problem to delete");
+    }
+    fetchProducts();
+  };
 
   return (
     <div>
       <div>
         <label>Add product</label>
-        <button onClick={handleOpen}>Click here</button>
+        <button onClick={handleOpen} className="border p-1 rounded-md">
+          Click here
+        </button>
         {isOpen ? (
           <form onSubmit={handleSubmit}>
             <div>
@@ -123,9 +143,14 @@ export default function Home() {
         return (
           <div className="flex gap-10">
             <div className="w-[200px]">{product?.name}</div>
-            <div>{product?.price}</div>
+            <div className="w-[100px]">{product?.price}</div>
             <div>{product?.description}</div>
-            <button className="border p-1 rounded-lg">Delete</button>
+            <button
+              className="border p-1 rounded-lg"
+              onClick={() => handleDelete(product.id)}
+            >
+              Delete
+            </button>
           </div>
         );
       })}
