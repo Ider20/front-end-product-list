@@ -1,14 +1,23 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useState, useEffect } from "react";
+import { Modal } from "./Components/Modal";
+import { UpdateModal } from "./Components/UpdateModal";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+  const [showUpdateModal, setShowUpdateModel] = useState(false);
 
-  const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState("");
-  const [productDescription, setProductDescription] = useState("");
+  const [test, setTest] = useState("");
+  const openUpdateModal = (e) => {
+    console.log(e.parentNode.children[0].innerText);
+    setTest(e.parentNode.children[0].innerText);
+    setShowUpdateModel(true);
+  };
+  const closeUpdateModal = () => setShowUpdateModel(false);
 
   // Fetching Data from BackEnd
   const fetchProducts = async () => {
@@ -24,60 +33,6 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
-  const inputProName = (e) => {
-    console.log(e.target.value);
-    setProductName(e.target.value);
-  };
-  const inputProPrice = (e) => {
-    console.log(e.target.value);
-    setProductPrice(e.target.value);
-  };
-  const inputProDes = (e) => {
-    console.log(e.target.value);
-    setProductDescription(e.target.value);
-  };
-  //================================================================================
-  // Handling Submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // const generatedId = () => {
-    //   return Math.floor(Math.random() * 100);
-    // };
-    const productData = {
-      name: productName,
-      price: parseFloat(productPrice),
-      description: productDescription,
-    };
-
-    try {
-      const response = await fetch("http://localhost:8080/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productData),
-      });
-
-      if (response.ok) {
-        alert("Product created successfully!");
-        // Redirect or show success message as needed
-      } else {
-        alert("Failed to create product");
-        // Handle error, show error message, etc.
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle network errors or other issues
-    }
-  };
   //===========================================================================
   //Handling delete
   const handleDelete = async (id) => {
@@ -96,60 +51,36 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <div>
-        <label>Add product</label>
-        <button onClick={handleOpen} className="border p-1 rounded-md">
+    <div className="">
+      <Modal showModal={showModal} closeModal={closeModal} />
+      <UpdateModal
+        test={test}
+        showUpdateModal={showUpdateModal}
+        closeUpdateModal={closeUpdateModal}
+      />
+      <div className="flex justify-center items-center gap-10 mb-10 pt-10">
+        <label>Add a product to This list</label>
+        <button onClick={openModal} className="border p-1 rounded-md">
           Click here
         </button>
-        {isOpen ? (
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>
-                Product Name:
-                <input
-                  placeholder=""
-                  value={productName}
-                  onChange={inputProName}
-                />
-              </label>
-              <label>
-                Product Price:
-                <input
-                  placeholder=""
-                  onChange={inputProPrice}
-                  value={productPrice}
-                />
-              </label>
-              <label>
-                Product Description:
-                <input
-                  placeholder=""
-                  onChange={inputProDes}
-                  value={productDescription}
-                />
-              </label>
-            </div>
-
-            <button className="border p-1 rounded-lg" type="submit">
-              Submit
-            </button>
-          </form>
-        ) : (
-          ""
-        )}
       </div>
       {products.map((product) => {
         return (
-          <div className="flex gap-10">
-            <div className="w-[200px]">{product?.name}</div>
-            <div className="w-[100px]">{product?.price}</div>
-            <div>{product?.description}</div>
+          <div className="flex gap-2 justify-center items-center">
+            <div className="w-[200px] mb-6">{product?.name}</div>
+            <div className="w-[200px] mb-6">{product?.price}</div>
+            <div className="w-[200px] mb-6">{product?.description}</div>
             <button
-              className="border p-1 rounded-lg"
+              className="border p-1 rounded-lg w-[100px] h-[40px] mb-6"
               onClick={() => handleDelete(product.id)}
             >
               Delete
+            </button>
+            <button
+              onClick={(e) => openUpdateModal(e.target)}
+              className="border p-1 rounded-lg w-[100px] h-[40px] cursor-pointer mb-6"
+            >
+              Update
             </button>
           </div>
         );
