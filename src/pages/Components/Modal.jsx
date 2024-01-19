@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { UpdateModal } from "./UpdateModal";
 
-export const Modal = ({ showModal, closeModal }) => {
+export const Modal = ({ showModal, closeModal, fetchProducts }) => {
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -60,6 +60,7 @@ export const Modal = ({ showModal, closeModal }) => {
       console.error("Error:", error);
       // Handle network errors or other issues
     }
+    fetchProducts();
   };
 
   if (!showModal) return null;

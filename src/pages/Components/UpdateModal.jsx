@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 export const UpdateModal = ({
@@ -8,26 +8,39 @@ export const UpdateModal = ({
   setProductName,
   setProductPrice,
   setProductDescription,
-  test,
+  name,
+  price,
+  description,
+  fetchProducts,
 }) => {
   const [inputProductNameValue, setInputProductNameValue] = useState("");
   const [inputProductPriceValue, setInputProductPriceValue] = useState("");
   const [inputProductDescriptionValue, setInputProductDescriptionValue] =
     useState("");
 
+  console.log("inputProductNameValue", inputProductNameValue);
+
   const handleCloseWindow = (e) => {
     if (e.target.classList.contains("bg-light-black")) {
       closeUpdateModal();
     }
   };
-  console.log(test, "test");
-  const handleInputProductValue = () => {
-    {
-      setInputProductNameValue(test);
-    }
+
+  const handleInputProductValue = (e) => {
+    setInputProductNameValue(e.target.value);
+    // {
+    //   setInputProductNameValue(test);
+    // }
   };
 
+  useEffect(() => {
+    setInputProductNameValue(name);
+    setInputProductPriceValue(Number(price));
+    setInputProductDescriptionValue(description);
+  }, [name, price, description]);
+
   if (!showUpdateModal) return null;
+
   return (
     <div
       className="bg-light-black w-full h-full absolute flex justify-center items-center"
@@ -51,7 +64,6 @@ export const UpdateModal = ({
           <label>
             Product Name:
             <input
-              placeholder=""
               value={inputProductNameValue}
               onChange={handleInputProductValue}
               className="border rounded"
@@ -61,7 +73,7 @@ export const UpdateModal = ({
             Product Price:
             <input
               placeholder=""
-              //   onChange={inputProPrice}
+              onChange={setInputProductPriceValue}
               value={inputProductPriceValue}
               className="border rounded"
             />
@@ -70,7 +82,7 @@ export const UpdateModal = ({
             Product Description:
             <input
               placeholder=""
-              //   onChange={inputProDes}
+              onChange={setInputProductDescriptionValue}
               value={inputProductDescriptionValue}
               className="border rounded"
             />

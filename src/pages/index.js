@@ -10,11 +10,14 @@ export default function Home() {
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
   const [showUpdateModal, setShowUpdateModel] = useState(false);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [test, setTest] = useState("");
-  const openUpdateModal = (e) => {
-    console.log(e.parentNode.children[0].innerText);
-    setTest(e.parentNode.children[0].innerText);
+  const openUpdateModal = (name, price, description) => {
+    setName(name);
+    setPrice(Number(price));
+    setDescription(description);
     setShowUpdateModel(true);
   };
   const closeUpdateModal = () => setShowUpdateModel(false);
@@ -44,17 +47,24 @@ export default function Home() {
           "Content-Type": "application/json",
         },
       });
+      await fetchProducts();
     } catch (error) {
       alert("We have problem to delete");
     }
-    fetchProducts();
   };
 
   return (
     <div className="">
-      <Modal showModal={showModal} closeModal={closeModal} />
+      <Modal
+        showModal={showModal}
+        closeModal={closeModal}
+        fetchProducts={fetchProducts}
+      />
       <UpdateModal
-        test={test}
+        fetchProducts={fetchProducts}
+        name={name}
+        prics={price}
+        description={description}
         showUpdateModal={showUpdateModal}
         closeUpdateModal={closeUpdateModal}
       />
@@ -77,7 +87,13 @@ export default function Home() {
               Delete
             </button>
             <button
-              onClick={(e) => openUpdateModal(e.target)}
+              onClick={() =>
+                openUpdateModal(
+                  product.name,
+                  product.price,
+                  product.description
+                )
+              }
               className="border p-1 rounded-lg w-[100px] h-[40px] cursor-pointer mb-6"
             >
               Update
